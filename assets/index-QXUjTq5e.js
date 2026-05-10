@@ -252,6 +252,17 @@ Ti difendi facendo ironia sul posto in cui vivi prima che lo facciano gli altri.
     background: #e8e8e8;
   }
 
+  @media (max-width: 560px) {
+    .result-body {
+      flex-direction: column;
+    }
+    .result-image {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1;
+    }
+  }
+
   .result-description {
     font-size: 1.05rem;
     line-height: 1.8;
