@@ -5,7 +5,7 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   // GitHub Pages project sites live under /<repo-name>/; asset URLs must match.
-  base: '/barriera-babylon/',
+  base: '/',
 })
 
 
