@@ -440,6 +440,17 @@ const styles = `
     background: #e8e8e8;
   }
 
+  @media (max-width: 560px) {
+    .result-body {
+      flex-direction: column;
+    }
+    .result-image {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1;
+    }
+  }
+
   .result-description {
     font-size: 1.05rem;
     line-height: 1.8;
@@ -687,7 +698,7 @@ export default function App() {
             <div className="result-body">
               <img
                 className="result-image"
-                src={`/images/${resultKey.toLowerCase()}.jpg`}
+                src={`./images/${resultKey.toLowerCase()}.jpg`}
                 alt={resultData.name}
               />
               <p className="result-description">{resultData.description}</p>
