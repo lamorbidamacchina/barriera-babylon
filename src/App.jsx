@@ -711,10 +711,6 @@ export default function App() {
               <button className="restart-btn" onClick={handleRestart}>
                 Ricomincia
               </button>
-              <p className="book-note">
-                Barriera Babylon — un giallo urbano<br />
-                di prossima pubblicazione
-              </p>
             </div>
           </div>
         )}
