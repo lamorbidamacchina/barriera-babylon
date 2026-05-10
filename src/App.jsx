@@ -224,6 +224,8 @@ function computeResult(answers) {
   return Object.entries(counts).reduce((a, b) => (b[1] > a[1] ? b : a))[0];
 }
 
+const assetBase = import.meta.env.BASE_URL;
+
 const styles = `
   @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Serif:ital,wght@0,400;0,500;1,400&display=swap');
 
@@ -252,7 +254,7 @@ const styles = `
     height: 60px;
     border-bottom: 1px solid rgba(17, 17, 17, 0.25);
     background-color: #2a3140;
-    background-image: url('/header.png');
+    background-image: url('${assetBase}header-v2.png');
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center center;
