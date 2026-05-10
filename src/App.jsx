@@ -240,31 +240,32 @@ const styles = `
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    padding-top: 60px;
   }
 
   .header {
-    border-bottom: 1px solid #111;
-    padding: 1.5rem 2rem;
-    display: flex;
-    align-items: baseline;
-    gap: 1.5rem;
-    flex-wrap: wrap;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    height: 60px;
+    border-bottom: 1px solid rgba(17, 17, 17, 0.25);
+    background-color: #2a3140;
+    background-image: url('/header.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
   }
 
-  .header-title {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.75rem;
-    font-weight: 500;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-  }
+  @media (min-width: 768px) {
+    .app {
+      padding-top: 80px;
+    }
 
-  .header-sub {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.65rem;
-    color: #555;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+    .header {
+      height: 80px;
+    }
   }
 
   .progress-bar-outer {
@@ -610,10 +611,11 @@ export default function App() {
     <>
       <style>{styles}</style>
       <div className="app">
-        <header className="header">
-          <span className="header-title">Barriera Babylon</span>
-          <span className="header-sub">Profilazione civica non autorizzata</span>
-        </header>
+        <header
+          className="header"
+          role="banner"
+          aria-label="Barriera Babylon — Profilazione civica non autorizzata"
+        />
 
         {phase !== "intro" && (
           <div className="progress-bar-outer">
