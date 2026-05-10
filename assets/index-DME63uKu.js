@@ -64,7 +64,7 @@ Ti difendi facendo ironia sul posto in cui vivi prima che lo facciano gli altri.
     height: 60px;
     border-bottom: 1px solid rgba(17, 17, 17, 0.25);
     background-color: #2a3140;
-    background-image: url('/header.png');
+    background-image: url('/barriera-babylon/header-v2.png');
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center center;
