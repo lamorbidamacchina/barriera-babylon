@@ -225,6 +225,7 @@ function computeResult(answers) {
 }
 
 const assetBase = import.meta.env.BASE_URL;
+const canonicalSiteUrl = "https://barrierababylon.it";
 
 const styles = `
   @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Serif:ital,wght@0,400;0,500;1,400&display=swap');
@@ -671,15 +672,25 @@ export default function App() {
     shareFeedbackTimeoutRef.current = setTimeout(() => setShareFeedback(""), 2600);
   }
 
+  function getProfileShareUrl(profileKey) {
+    const normalizedKey = profileKey?.toLowerCase();
+    if (!normalizedKey) return canonicalSiteUrl;
+    return `${canonicalSiteUrl}/share/${normalizedKey}.html`;
+  }
+
   function handleShareFacebook() {
-    const url = encodeURIComponent(window.location.href);
-    window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, "_blank", "noopener,noreferrer");
+    if (!resultData || !resultKey) return;
+    const quote = `Ho fatto la Profilazione Civica Non Autorizzata di Barriera Babylon: sono ${resultData.name}. ${resultData.description}`;
+    const shareTargetUrl = getProfileShareUrl(resultKey);
+    const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareTargetUrl)}&quote=${encodeURIComponent(quote)}`;
+    window.open(shareUrl, "_blank", "noopener,noreferrer");
   }
 
   async function handleShareInstagram() {
     if (!resultData) return;
 
-    const shareText = `Ho fatto la Profilazione Civica Non Autorizzata di Barriera Babylon e il mio profilo e': ${resultData.name}.\n\nE tu chi sei dentro Barriera?\n${window.location.href}\n\n#BarrieraBabylon #BarrieraDiMilano #Torino #Romanzo #Distopico #NoirItaliano`;
+    const shareTargetUrl = getProfileShareUrl(resultKey);
+    const shareText = `Ho fatto la Profilazione Civica Non Autorizzata di Barriera Babylon e il mio profilo e': ${resultData.name}.\n\n${resultData.description}\n\nE tu chi sei dentro Barriera?\n${shareTargetUrl}\n\n#BarrieraBabylon #BarrieraDiMilano #Torino #Romanzo #Distopico #NoirItaliano`;
     try {
       await navigator.clipboard.writeText(shareText);
       resetShareFeedbackWithDelay("Testo copiato. Incollalo su Instagram.");
