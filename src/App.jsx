@@ -226,6 +226,16 @@ function computeResult(answers) {
 
 const assetBase = import.meta.env.BASE_URL;
 const canonicalSiteUrl = "https://barrierababylon.it";
+const leadFormConfig = {
+  action: import.meta.env.VITE_LEAD_FORM_ACTION || "",
+  emailField: import.meta.env.VITE_LEAD_FORM_EMAIL_FIELD || "",
+  privacyField: import.meta.env.VITE_LEAD_FORM_PRIVACY_FIELD || "",
+  /** Text stored for "Risposta breve" consent in Google Forms; override via env if needed. */
+  privacyValue:
+    import.meta.env.VITE_LEAD_FORM_PRIVACY_VALUE ||
+    "Acconsento al trattamento dei dati personali per ricevere aggiornamenti su Barriera Babylon.",
+  profileField: import.meta.env.VITE_LEAD_FORM_PROFILE_FIELD || "",
+};
 
 const styles = `
   @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Serif:ital,wght@0,400;0,500;1,400&display=swap');
@@ -522,6 +532,78 @@ const styles = `
     margin-top: 0.35rem;
   }
 
+  .lead-capture {
+    margin-top: 2.5rem;
+    border-top: 1px solid #e0e0e0;
+    padding-top: 2rem;
+  }
+
+  .lead-title {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: #222;
+    margin-bottom: 1rem;
+  }
+
+  .lead-form {
+    display: grid;
+    gap: 0.85rem;
+    max-width: 520px;
+  }
+
+  .lead-form input[type="email"] {
+    border: 1px solid #c7c7c7;
+    min-height: 42px;
+    padding: 0.65rem 0.85rem;
+    font-family: 'IBM Plex Serif', Georgia, serif;
+    font-size: 1rem;
+  }
+
+  .lead-consent {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.55rem;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: #444;
+  }
+
+  .lead-consent input {
+    margin-top: 0.18rem;
+    accent-color: #111;
+  }
+
+  .lead-submit {
+    justify-self: start;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: #111;
+    border: 1px solid #111;
+    color: #fff;
+    padding: 0.72rem 1.2rem;
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+  }
+
+  .lead-submit:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .lead-feedback {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.64rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #666;
+  }
+
+  .lead-feedback.error {
+    color: #9f2f2f;
+  }
+
   .restart-btn {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 0.7rem;
@@ -650,9 +732,11 @@ export default function App() {
   const [current, setCurrent] = useState(0);
   const [answers, setAnswers] = useState({});
   const [isQuestionVisible, setIsQuestionVisible] = useState(true);
-  const [shareFeedback, setShareFeedback] = useState("");
   const transitionTimeoutRef = useRef(null);
-  const shareFeedbackTimeoutRef = useRef(null);
+  const [leadEmail, setLeadEmail] = useState("");
+  const [leadConsentAccepted, setLeadConsentAccepted] = useState(false);
+  const [leadSubmitState, setLeadSubmitState] = useState("idle");
+  const [leadSubmitMessage, setLeadSubmitMessage] = useState("");
 
   const totalQ = questions.length;
   const q = questions[current];
@@ -662,43 +746,8 @@ export default function App() {
   useEffect(() => {
     return () => {
       if (transitionTimeoutRef.current) clearTimeout(transitionTimeoutRef.current);
-      if (shareFeedbackTimeoutRef.current) clearTimeout(shareFeedbackTimeoutRef.current);
     };
   }, []);
-
-  function resetShareFeedbackWithDelay(message) {
-    if (shareFeedbackTimeoutRef.current) clearTimeout(shareFeedbackTimeoutRef.current);
-    setShareFeedback(message);
-    shareFeedbackTimeoutRef.current = setTimeout(() => setShareFeedback(""), 2600);
-  }
-
-  function getProfileShareUrl(profileKey) {
-    const normalizedKey = profileKey?.toLowerCase();
-    if (!normalizedKey) return canonicalSiteUrl;
-    return `${canonicalSiteUrl}/share/${normalizedKey}.html`;
-  }
-
-  function handleShareFacebook() {
-    if (!resultData || !resultKey) return;
-    const quote = `Ho fatto la Profilazione Civica Non Autorizzata di Barriera Babylon: sono ${resultData.name}. ${resultData.description}`;
-    const shareTargetUrl = getProfileShareUrl(resultKey);
-    const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareTargetUrl)}&quote=${encodeURIComponent(quote)}`;
-    window.open(shareUrl, "_blank", "noopener,noreferrer");
-  }
-
-  async function handleShareInstagram() {
-    if (!resultData) return;
-
-    const shareTargetUrl = getProfileShareUrl(resultKey);
-    const shareText = `Ho fatto la Profilazione Civica Non Autorizzata di Barriera Babylon e il mio profilo e': ${resultData.name}.\n\n${resultData.description}\n\nE tu chi sei dentro Barriera?\n${shareTargetUrl}\n\n#BarrieraBabylon #BarrieraDiMilano #Torino #Romanzo #Distopico #NoirItaliano`;
-    try {
-      await navigator.clipboard.writeText(shareText);
-      resetShareFeedbackWithDelay("Testo copiato. Incollalo su Instagram.");
-    } catch {
-      resetShareFeedbackWithDelay("Copia manuale non disponibile su questo browser.");
-    }
-    window.open("https://www.instagram.com/", "_blank", "noopener,noreferrer");
-  }
 
   function handleSelect(letter) {
     setAnswers((prev) => ({ ...prev, [q.id]: letter }));
@@ -730,6 +779,10 @@ export default function App() {
     setAnswers({});
     setCurrent(0);
     setIsQuestionVisible(true);
+    setLeadEmail("");
+    setLeadConsentAccepted(false);
+    setLeadSubmitState("idle");
+    setLeadSubmitMessage("");
     setPhase("intro");
   }
 
@@ -743,6 +796,48 @@ export default function App() {
 
   const resultKey = phase === "result" ? computeResult(answers) : null;
   const resultData = resultKey ? results[resultKey] : null;
+  const isLeadEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(leadEmail.trim());
+  const canSubmitLead = isLeadEmailValid && leadConsentAccepted && leadSubmitState !== "submitting";
+
+  async function handleLeadSubmit(event) {
+    event.preventDefault();
+
+    if (!isLeadEmailValid || !leadConsentAccepted) {
+      setLeadSubmitState("error");
+      setLeadSubmitMessage("Compila email valida e consenso privacy.");
+      return;
+    }
+
+    if (!leadFormConfig.action || !leadFormConfig.emailField || !leadFormConfig.privacyField) {
+      setLeadSubmitState("error");
+      setLeadSubmitMessage("Form non configurato: imposta i campi VITE_LEAD_FORM_*.");
+      return;
+    }
+
+    const payload = new URLSearchParams();
+    payload.append(leadFormConfig.emailField, leadEmail.trim());
+    payload.append(leadFormConfig.privacyField, leadFormConfig.privacyValue);
+    if (leadFormConfig.profileField && resultData?.name) {
+      payload.append(leadFormConfig.profileField, resultData.name);
+    }
+
+    try {
+      setLeadSubmitState("submitting");
+      setLeadSubmitMessage("");
+      await fetch(leadFormConfig.action, {
+        method: "POST",
+        mode: "no-cors",
+        body: payload,
+      });
+      setLeadSubmitState("success");
+      setLeadSubmitMessage("Grazie! Ti aggiorneremo presto sulle novita'.");
+      setLeadEmail("");
+      setLeadConsentAccepted(false);
+    } catch {
+      setLeadSubmitState("error");
+      setLeadSubmitMessage("Invio non riuscito. Riprova tra poco.");
+    }
+  }
 
   return (
     <>
@@ -868,13 +963,41 @@ export default function App() {
                 </svg>
                 Ordina la tua copia
               </button>
-              <button className="share-btn" onClick={handleShareFacebook}>
-                Condividi su Facebook
-              </button>
-              <button className="share-btn" onClick={handleShareInstagram}>
-                Condividi su Instagram
-              </button>
-              {shareFeedback && <p className="share-feedback">{shareFeedback}</p>}
+              {/* Sharing temporarily hidden until external crawler issue is resolved. */}
+            </div>
+            <div className="lead-capture">
+              <p className="lead-title">
+                Lascia la tua email, se vuoi rimanere aggiornato sulle novita' di Barriera Babylon.
+              </p>
+              <form className="lead-form" onSubmit={handleLeadSubmit}>
+                <input
+                  type="email"
+                  value={leadEmail}
+                  onChange={(event) => setLeadEmail(event.target.value)}
+                  placeholder="La tua email"
+                  autoComplete="email"
+                  required
+                />
+                <label className="lead-consent">
+                  <input
+                    type="checkbox"
+                    checked={leadConsentAccepted}
+                    onChange={(event) => setLeadConsentAccepted(event.target.checked)}
+                    required
+                  />
+                  <span>
+                    Acconsento al trattamento dei dati personali per ricevere aggiornamenti su Barriera Babylon.
+                  </span>
+                </label>
+                <button className="lead-submit" type="submit" disabled={!canSubmitLead}>
+                  {leadSubmitState === "submitting" ? "Invio..." : "Iscriviti"}
+                </button>
+                {leadSubmitMessage && (
+                  <p className={`lead-feedback${leadSubmitState === "error" ? " error" : ""}`}>
+                    {leadSubmitMessage}
+                  </p>
+                )}
+              </form>
             </div>
           </div>
         )}
