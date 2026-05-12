@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import Footer from "./Footer.jsx";
 
 const questions = [
   {
@@ -225,7 +226,6 @@ function computeResult(answers) {
 }
 
 const assetBase = import.meta.env.BASE_URL;
-const canonicalSiteUrl = "https://barrierababylon.it";
 const leadFormConfig = {
   action: import.meta.env.VITE_LEAD_FORM_ACTION || "",
   emailField: import.meta.env.VITE_LEAD_FORM_EMAIL_FIELD || "",
@@ -254,6 +254,14 @@ const styles = `
     display: flex;
     flex-direction: column;
     padding-top: 56px;
+  }
+
+  .app-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: 0;
   }
 
   .header {
@@ -638,16 +646,6 @@ const styles = `
     padding: 2rem 2rem 3.5rem;
   }
 
-  .intro-tag {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.65rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: #888;
-    margin-bottom: 2rem;
-    display: block;
-  }
-
   .intro-subtitle {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 0.85rem;
@@ -749,6 +747,10 @@ export default function App() {
     };
   }, []);
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }, [phase, current]);
+
   function handleSelect(letter) {
     setAnswers((prev) => ({ ...prev, [q.id]: letter }));
   }
@@ -791,7 +793,6 @@ export default function App() {
     setCurrent(0);
     setIsQuestionVisible(true);
     setPhase("quiz");
-    window.scrollTo({ top: 0, behavior: "auto" });
   }
 
   const resultKey = phase === "result" ? computeResult(answers) : null;
@@ -849,6 +850,7 @@ export default function App() {
           aria-label="Barriera Babylon — Profilazione civica non autorizzata"
         />
 
+        <div className="app-body">
         {phase !== "intro" && (
           <div className="progress-bar-outer">
             <div
@@ -860,7 +862,6 @@ export default function App() {
 
         {phase === "intro" && (
           <div className="intro">
-            <span className="intro-tag">Documento riservato — uso interno</span>
             <p className="intro-subtitle">Profilazione Civica Non Autorizzata</p>
             <hr className="intro-divider" />
             <p className="intro-body">
@@ -986,7 +987,7 @@ export default function App() {
                     required
                   />
                   <span>
-                    Acconsento al trattamento dei dati personali per ricevere aggiornamenti su Barriera Babylon.
+                  Accetto il trattamento dei dati secondo la <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a> unicamente per ricevere aggiornamenti su Barriera Babylon ed iniziative ad esso correlate.
                   </span>
                 </label>
                 <button className="lead-submit" type="submit" disabled={!canSubmitLead}>
@@ -1001,6 +1002,9 @@ export default function App() {
             </div>
           </div>
         )}
+        </div>
+
+        <Footer />
       </div>
     </>
   );
