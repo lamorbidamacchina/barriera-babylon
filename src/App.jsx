@@ -690,6 +690,16 @@ const styles = `
     margin-bottom: 1.1rem;
   }
 
+  .intro-actions {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 20px;
+    width: 100%;
+    margin-bottom: 1.4rem;
+  }
+
   .start-btn {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 0.75rem;
@@ -702,6 +712,80 @@ const styles = `
     margin-bottom: 1.4rem;
     cursor: pointer;
     transition: background 0.15s;
+  }
+
+  .intro-actions .start-btn,
+  .intro-actions .cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    min-height: 44px;
+    margin-bottom: 0;
+    padding: 0.72rem clamp(0.65rem, 3.5vw, 1rem);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .intro-actions .cta {
+    gap: 0.4rem;
+  }
+
+  .intro-actions .cta-icon {
+    width: 13px;
+    height: 13px;
+  }
+
+  .intro-actions .desktop-label {
+    display: none;
+  }
+
+  .intro-actions .narrow-label {
+    display: none;
+  }
+
+  @media (max-width: 354px) {
+    .intro-actions .full-label {
+      display: none;
+    }
+
+    .intro-actions .narrow-label {
+      display: inline;
+    }
+  }
+
+  @media (min-width: 761px) {
+    .intro-actions {
+      gap: 20px;
+    }
+
+    .intro-actions .mobile-label {
+      display: none;
+    }
+
+    .intro-actions .desktop-label {
+      display: inline;
+    }
+
+    .intro-actions .start-btn {
+      padding: 0.8rem 2rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+    }
+
+    .intro-actions .cta {
+      gap: 0.55rem;
+      padding: 0.72rem 1.8rem;
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+    }
+
+    .intro-actions .cta-icon {
+      width: 14px;
+      height: 14px;
+    }
   }
 
   .start-btn:hover {
@@ -890,26 +974,29 @@ export default function App() {
               <br /><br />
               Scopri chi sei tu dentro <em>Barriera Babylon</em>.
             </p>
-            <button className="start-btn" onClick={handleStart}>
-              Avvia profilazione →
-            </button>
+            <div className="intro-actions">
+              <button className="start-btn" onClick={handleStart}>
+                <span className="full-label">Avvia Profilazione →</span>
+                <span className="narrow-label">Inizia →</span>
+              </button>
+              <button
+                className="cta"
+                onClick={() => window.open("https://www.golemedizioni.it/prodotto/barriera-babylon/", "_blank", "noopener,noreferrer")}
+              >
+                <svg className="cta-icon" viewBox="0 0 16 16" aria-hidden="true">
+                  <path d="M1.5 2.5h1.8l1.2 6.2h6.6l1.3-4.7H5.3" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+                  <circle cx="6.2" cy="12.2" r="1" fill="currentColor" />
+                  <circle cx="10.6" cy="12.2" r="1" fill="currentColor" />
+                </svg>
+                <span className="mobile-label">Ordina</span>
+                <span className="desktop-label">Ordina la tua copia</span>
+              </button>
+            </div>
             <p className="intro-instructions">
               — 15 domande<br />
               — una risposta per domanda<br />
               — nessuna risposta giusta
             </p>
-            <button
-              className="cta"
-              onClick={() => window.open("https://www.golemedizioni.it/prodotto/barriera-babylon/", "_blank", "noopener,noreferrer")}
-            >
-              <svg className="cta-icon" viewBox="0 0 16 16" aria-hidden="true">
-                <path d="M1.5 2.5h1.8l1.2 6.2h6.6l1.3-4.7H5.3" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-                <circle cx="6.2" cy="12.2" r="1" fill="currentColor" />
-                <circle cx="10.6" cy="12.2" r="1" fill="currentColor" />
-              </svg>
-              Ordina la tua copia
-            </button>
-            
           </div>
         )}
 
