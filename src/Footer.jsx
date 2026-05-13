@@ -4,13 +4,15 @@ const footerStyles = `
   .site-footer {
     flex-shrink: 0;
     border-top: 1px solid rgba(17, 17, 17, 0.12);
-    padding: 1rem 2rem 1.35rem;
+    padding: 1rem 0 1.35rem;
     margin-top: auto;
   }
 
   .site-footer-inner {
     max-width: 720px;
+    width: 100%;
     margin: 0 auto;
+    padding: 0 2rem;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
