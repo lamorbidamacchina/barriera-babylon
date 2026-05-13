@@ -264,6 +264,18 @@ const styles = `
     min-height: 0;
   }
 
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
   .header {
     position: fixed;
     top: 0;
@@ -848,7 +860,9 @@ export default function App() {
           className="header"
           role="banner"
           aria-label="Barriera Babylon — Profilazione civica non autorizzata"
-        />
+        >
+          <h1 className="visually-hidden">Barriera Babylon</h1>
+        </header>
 
         <div className="app-body">
         {phase !== "intro" && (
